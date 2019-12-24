@@ -7,10 +7,10 @@ import (
 )
 
 type Var struct {
-	Name         string `json:"name"`
-	Range        Range `json:"range"`
+	Name         string       `json:"name"`
+	Range        Range        `json:"range"`
 	Distribution Distribution `json:"distribution"`
-	Constraint   *string `json:"constraint"`
+	Constraint   *string      `json:"constraint"`
 }
 
 func (r Var) IsConstraintSatisfied(vars []Var, vals []float64) (bool, error) {
