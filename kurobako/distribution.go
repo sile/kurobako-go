@@ -19,7 +19,7 @@ func (r Distribution) String() string {
 	case LogUniform:
 		return "LOG_UNIFORM"
 	default:
-		panic("Unknown distribution")
+		panic("unknown distribution")
 	}
 }
 

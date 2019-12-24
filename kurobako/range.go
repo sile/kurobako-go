@@ -6,8 +6,8 @@ import (
 )
 
 type ContinuousRange struct {
-	Low  float64
-	High float64
+	Low  float64 `json:"low"`
+	High float64 `json:"high"`
 }
 
 func (r ContinuousRange) ToRange() Range {
@@ -15,8 +15,8 @@ func (r ContinuousRange) ToRange() Range {
 }
 
 type DiscreteRange struct {
-	Low  int64
-	High int64
+	Low  int64 `json:"low"`
+	High int64 `json:"high"`
 }
 
 func (r DiscreteRange) ToRange() Range {
@@ -24,7 +24,7 @@ func (r DiscreteRange) ToRange() Range {
 }
 
 type CategoricalRange struct {
-	Choices []string
+	Choices []string `json:"choices"`
 }
 
 func (r CategoricalRange) ToRange() Range {
@@ -93,38 +93,25 @@ func (r *Range) UnmarshalJSON(data []byte) error {
 
 	switch m["type"] {
 	case "CONTINUOUS":
-		low, ok := m["low"].(float64)
-		if !ok {
-			return fmt.Errorf("\"low\" should be a float: %v", m["low"])
+		var x ContinuousRange
+		if err := json.Unmarshal(data, &x); err != nil {
+			return err
 		}
-
-		high, ok := m["high"].(float64)
-		if !ok {
-			return fmt.Errorf("\"high\" should be a float: %v", m["high"])
-		}
-
-		*r = ContinuousRange{low, high}.ToRange()
+		*r = x.ToRange()
 
 	case "DISCRETE":
-		low, ok := m["low"].(int64)
-		if !ok {
-			return fmt.Errorf("\"low\" should be a int: %v", m["low"])
+		var x DiscreteRange
+		if err := json.Unmarshal(data, &x); err != nil {
+			return err
 		}
-
-		high, ok := m["high"].(int64)
-		if !ok {
-			return fmt.Errorf("\"high\" should be a int: %v", m["high"])
-		}
-
-		*r = DiscreteRange{low, high}.ToRange()
+		*r = x.ToRange()
 
 	case "CATEGORICAL":
-		choices, ok := m["choices"].([]string)
-		if !ok {
-			return fmt.Errorf("\"choices\" should be a list of string: %v", m["choices"])
+		var x CategoricalRange
+		if err := json.Unmarshal(data, &x); err != nil {
+			return err
 		}
-
-		*r = CategoricalRange{choices}.ToRange()
+		*r = x.ToRange()
 
 	default:
 		return fmt.Errorf("unknown or missing \"type\" field: %v", m["type"])
