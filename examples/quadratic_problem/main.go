@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/sile/kurobako-go/kurobako"
+	"github.com/sile/kurobako-go"
 )
 
 type quadraticProblemFactory struct {
