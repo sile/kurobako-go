@@ -13,6 +13,15 @@ type Var struct {
 	Constraint   *string      `json:"constraint"`
 }
 
+func NewVar(name string) Var {
+	return Var{
+		Name:         name,
+		Range:        ContinuousRange{math.Inf(-1), math.Inf(0)}.ToRange(),
+		Distribution: Uniform,
+		Constraint:   nil,
+	}
+}
+
 func (r Var) IsConstraintSatisfied(vars []Var, vals []float64) (bool, error) {
 	if r.Constraint == nil {
 		return true, nil
