@@ -156,31 +156,44 @@ func (r *GoptunaSolver) suggest(goptunaTrialId int, param kurobako.Var) (float64
 		return 0.0, err
 	}
 
+	var distribution interface{}
+	distribution = nil
+
 	if x := param.Range.AsContinuousRange(); x != nil {
 		if param.Distribution == kurobako.Uniform {
-			distribution := goptuna.UniformDistribution{
+			distribution = goptuna.UniformDistribution{
 				Low:  x.Low,
 				High: x.High,
 			}
-			return r.study.Sampler.Sample(r.study, trial, param.Name, distribution)
 		} else {
-			distribution := goptuna.LogUniformDistribution{
+			distribution = goptuna.LogUniformDistribution{
 				Low:  x.Low,
 				High: x.High,
 			}
-			return r.study.Sampler.Sample(r.study, trial, param.Name, distribution)
 		}
 	} else if x := param.Range.AsDiscreteRange(); x != nil {
 		if param.Distribution == kurobako.Uniform {
-			distribution := goptuna.IntUniformDistribution{
+			distribution = goptuna.IntUniformDistribution{
 				Low:  int(x.Low),
 				High: int(x.High - 1),
 			}
-			return r.study.Sampler.Sample(r.study, trial, param.Name, distribution)
 		}
 	} else if x := param.Range.AsCategoricalRange(); x != nil {
-		distribution := goptuna.CategoricalDistribution{Choices: x.Choices}
-		return r.study.Sampler.Sample(r.study, trial, param.Name, distribution)
+		distribution = goptuna.CategoricalDistribution{Choices: x.Choices}
+	}
+
+	if distribution != nil {
+		value, err := r.study.Sampler.Sample(r.study, trial, param.Name, distribution)
+		if err != nil {
+			return 0.0, err
+		}
+
+		err = r.study.Storage.SetTrialParam(goptunaTrialId, param.Name, value, distribution)
+		if err != nil {
+			return 0.0, err
+		}
+
+		return value, nil
 	}
 
 	return 0.0, fmt.Errorf("unsupported parameter: %v", param)

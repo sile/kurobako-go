@@ -2,12 +2,14 @@ package main
 
 import (
 	"github.com/c-bata/goptuna"
+	"github.com/c-bata/goptuna/tpe"
 	"github.com/sile/kurobako-go"
 	"github.com/sile/kurobako-go/goptuna/solver"
 )
 
 func createStudy(seed int64) (*goptuna.Study, error) {
-	return goptuna.CreateStudy("example-study")
+	sampler := tpe.NewSampler(tpe.SamplerOptionSeed(seed))
+	return goptuna.CreateStudy("example-study", goptuna.StudyOptionSampler(sampler))
 }
 
 func main() {
