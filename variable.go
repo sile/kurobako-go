@@ -22,7 +22,7 @@ func NewVar(name string) Var {
 	}
 }
 
-func (r Var) IsConstraintSatisfied(vars []Var, vals []float64) (bool, error) {
+func (r Var) IsConstraintSatisfied(vars []Var, vals []*float64) (bool, error) {
 	if r.Constraint == nil {
 		return true, nil
 	}
@@ -31,17 +31,17 @@ func (r Var) IsConstraintSatisfied(vars []Var, vals []float64) (bool, error) {
 	defer lua_state.Close()
 
 	for i := 0; i < len(vars) && i < len(vals); i++ {
-		if math.IsNaN(vals[i]) {
+		if vals[i] == nil {
 			// This is a conditional variable and has n't been bound a value.
 			continue
 		}
 
 		if x := vars[i].Range.AsContinuousRange(); x != nil {
-			lua_state.SetGlobal(vars[i].Name, lua.LNumber(vals[i]))
+			lua_state.SetGlobal(vars[i].Name, lua.LNumber(*vals[i]))
 		} else if x := vars[i].Range.AsDiscreteRange(); x != nil {
-			lua_state.SetGlobal(vars[i].Name, lua.LNumber(int(vals[i])))
+			lua_state.SetGlobal(vars[i].Name, lua.LNumber(int(*vals[i])))
 		} else if x := vars[i].Range.AsCategoricalRange(); x != nil {
-			index := int(vals[i])
+			index := int(*vals[i])
 			lua_state.SetGlobal(vars[i].Name, lua.LString(x.Choices[index]))
 		}
 	}
