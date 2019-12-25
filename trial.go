@@ -12,7 +12,7 @@ type NextTrial struct {
 
 func (r NextTrial) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{
-		"id":  r.TrialId,
+		"id":        r.TrialId,
 		"params":    r.Params,
 		"next_step": r.NextStep,
 	}

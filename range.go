@@ -38,15 +38,15 @@ func (r ContinuousRange) MarshalJSON() ([]byte, error) {
 
 func (r *ContinuousRange) UnmarshalJSON(data []byte) error {
 	var m struct {
-		Low *float64 `json:"low"`
+		Low  *float64 `json:"low"`
 		High *float64 `json:"high"`
 	}
 	if err := json.Unmarshal(data, &m); err != nil {
 		return err
 	}
 
-	if m.Low ==nil {
-		r.Low  = math.Inf(-1)
+	if m.Low == nil {
+		r.Low = math.Inf(-1)
 	} else {
 		r.Low = *m.Low
 	}
