@@ -131,12 +131,12 @@ func (r *GoptunaSolver) Tell(trial kurobako.EvaluatedTrial) error {
 		return err
 	}
 
-	trial, err := r.study.Storage.GetTrial(goptunaTrialID)
+	goptunaTrial, err := r.study.Storage.GetTrial(goptunaTrialID)
 	if err != nil {
 		return err
 	}
 
-	shouldPrune, err := r.study.Pruner.Prune(r.study, trial)
+	shouldPrune, err := r.study.Pruner.Prune(r.study, goptunaTrial)
 	if err != nil {
 		return err
 	}
@@ -144,7 +144,7 @@ func (r *GoptunaSolver) Tell(trial kurobako.EvaluatedTrial) error {
 	if shouldPrune {
 		r.pruned.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
 		return r.study.Storage.SetTrialState(goptunaTrialID, goptuna.TrialStatePruned)
-	}
+ 	}
 
 	r.waitings.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
 	return nil
