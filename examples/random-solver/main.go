@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/sile/kurobako-go"
 	"math"
 	"math/rand"
+
+	"github.com/sile/kurobako-go"
 )
 
 type randomSolverFactory struct{}
