@@ -210,14 +210,14 @@ func (r *trialQueue) push(item trialQueueItem) {
 func (r *trialQueue) pop() *trialQueueItem {
 	if len(r.items) == 0 {
 		return nil
-	} else {
-		item := r.items[0]
-		r.items = r.items[1:]
-		if len(r.items) == 0 {
-			r.items = nil
-		}
-		return &item
 	}
+
+	item := r.items[0]
+	r.items = r.items[1:]
+	if len(r.items) == 0 {
+		r.items = nil
+	}
+	return &item
 }
 
 type trialQueueItem struct {
