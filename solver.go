@@ -6,35 +6,55 @@ import (
 	"io"
 )
 
+// SolverSpec is the specification of a solver.
 type SolverSpec struct {
+	// Name is the name of the solver.
 	Name         string            `json:"name"`
+
+	// Attrs is the attributes of the solver.
 	Attrs        map[string]string `json:"attrs"`
+
+	// Capabilities is the capabilities of the solver.
 	Capabilities Capabilities      `json:"capabilities"`
 }
 
+// NewSolverSpec creates a new SolverSpec instance.
 func NewSolverSpec(name string) SolverSpec {
 	return SolverSpec{name, map[string]string{}, AllCapabilities}
 }
 
+// Solver interface.
 type Solver interface {
+	// Ask returns a NextTrial object that contains information about the next trial to be evaluated.
 	Ask(idg *TrialIDGenerator) (NextTrial, error)
+
+	// Tell takes an evaluation result of a trial and updates the state of the solver.
 	Tell(trial EvaluatedTrial) error
 }
 
+// SolverFactory allows to create a new solver instance.
 type SolverFactory interface {
+	// Specification returns the specification of the solver.
 	Specification() (*SolverSpec, error)
+
+	// CreateSolver creates a new solver instance with the given random seed.
+	//
+	// The created solver will be used to solve a black-box optimization problem defined by the given ProblemSpec.
 	CreateSolver(seed int64, problem ProblemSpec) (Solver, error)
 }
 
+// SolverRunner runs a solver.
 type SolverRunner struct {
 	factory SolverFactory
 	solvers map[uint64]Solver
 }
 
+// NewSolverRunner creates a new SolverRunner instance that handles the given solver.
 func NewSolverRunner(factory SolverFactory) *SolverRunner {
 	return &SolverRunner{factory, nil}
 }
 
+// Run runs a solver.
 func (r *SolverRunner) Run() error {
 	r.solvers = map[uint64]Solver{}
 
