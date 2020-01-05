@@ -43,12 +43,12 @@ func (r *SolverRunner) Run() error {
 	}
 
 	for {
-		do_continue, err := r.runOnce()
+		doContinue, err := r.runOnce()
 		if err != nil {
 			return err
 		}
 
-		if !do_continue {
+		if !doContinue {
 			break
 		}
 	}
@@ -89,7 +89,7 @@ func (r *SolverRunner) runOnce() (bool, error) {
 
 func (r *SolverRunner) handleTellCall(input []byte) error {
 	var message struct {
-		SolverId uint64         `json:"solver_id"`
+		SolverID uint64         `json:"solver_id"`
 		Trial    EvaluatedTrial `json:"trial"`
 	}
 
@@ -97,7 +97,7 @@ func (r *SolverRunner) handleTellCall(input []byte) error {
 		return err
 	}
 
-	solver := r.solvers[message.SolverId]
+	solver := r.solvers[message.SolverID]
 	if err := solver.Tell(message.Trial); err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func (r *SolverRunner) handleTellCall(input []byte) error {
 
 func (r *SolverRunner) handleAskCall(input []byte) error {
 	var message struct {
-		SolverId    uint64 `json:"solver_id"`
+		SolverID    uint64 `json:"solver_id"`
 		NextTrialID uint64 `json:"next_trial_id"`
 	}
 
@@ -119,7 +119,7 @@ func (r *SolverRunner) handleAskCall(input []byte) error {
 	}
 
 	idg := TrialIDGenerator{message.NextTrialID}
-	solver := r.solvers[message.SolverId]
+	solver := r.solvers[message.SolverID]
 	trial, err := solver.Ask(&idg)
 	if err != nil {
 		return err
@@ -128,27 +128,27 @@ func (r *SolverRunner) handleAskCall(input []byte) error {
 	reply := map[string]interface{}{
 		"type":          "ASK_REPLY",
 		"trial":         trial,
-		"next_trial_id": idg.NextId,
+		"next_trial_id": idg.NextID,
 	}
 	return r.sendMessage(reply)
 }
 
 func (r *SolverRunner) handleDropSolverCast(input []byte) error {
 	var message struct {
-		SolverId uint64 `json:"solver_id"`
+		SolverID uint64 `json:"solver_id"`
 	}
 
 	if err := json.Unmarshal(input, &message); err != nil {
 		return err
 	}
 
-	delete(r.solvers, message.SolverId)
+	delete(r.solvers, message.SolverID)
 	return nil
 }
 
 func (r *SolverRunner) handleCreateSolverCast(input []byte) error {
 	var message struct {
-		SolverId   uint64      `json:"solver_id"`
+		SolverID   uint64      `json:"solver_id"`
 		RandomSeed uint64      `json:"random_seed"`
 		Problem    ProblemSpec `json:"problem"`
 	}
@@ -162,7 +162,7 @@ func (r *SolverRunner) handleCreateSolverCast(input []byte) error {
 		return err
 	}
 
-	r.solvers[message.SolverId] = solver
+	r.solvers[message.SolverID] = solver
 	return nil
 }
 

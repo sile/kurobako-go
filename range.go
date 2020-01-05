@@ -111,27 +111,24 @@ func (r *Range) AsContinuousRange() *ContinuousRange {
 	inner, ok := (r.inner).(ContinuousRange)
 	if ok {
 		return &inner
-	} else {
-		return nil
 	}
+	return nil
 }
 
 func (r *Range) AsDiscreteRange() *DiscreteRange {
 	inner, ok := (r.inner).(DiscreteRange)
 	if ok {
 		return &inner
-	} else {
-		return nil
 	}
+	return nil
 }
 
 func (r *Range) AsCategoricalRange() *CategoricalRange {
 	inner, ok := (r.inner).(CategoricalRange)
 	if ok {
 		return &inner
-	} else {
-		return nil
 	}
+	return nil
 }
 
 func (r Range) MarshalJSON() ([]byte, error) {

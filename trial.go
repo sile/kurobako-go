@@ -29,11 +29,11 @@ type EvaluatedTrial struct {
 }
 
 type TrialIDGenerator struct {
-	NextId uint64
+	NextID uint64
 }
 
 func (r *TrialIDGenerator) Generate() uint64 {
-	id := r.NextId
-	r.NextId++
+	id := r.NextID
+	r.NextID++
 	return id
 }

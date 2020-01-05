@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-var UnevalableParamsError = errors.New("unevalable params")
+var ErrorUnevalableParams = errors.New("unevalable params")
 
 type ProblemSpec struct {
 	Name   string            `json:"name"`
@@ -60,12 +60,12 @@ func (r *ProblemRunner) Run() error {
 	}
 
 	for {
-		do_continue, err := r.runOnce()
+		doContinue, err := r.runOnce()
 		if err != nil {
 			return err
 		}
 
-		if !do_continue {
+		if !doContinue {
 			break
 		}
 	}
@@ -109,7 +109,7 @@ func (r *ProblemRunner) runOnce() (bool, error) {
 
 func (r *ProblemRunner) handleEvaluateCall(input []byte) error {
 	var message struct {
-		EvaluatorId uint64 `json:"evaluator_id"`
+		EvaluatorID uint64 `json:"evaluator_id"`
 		NextStep    uint64 `json:"next_step"`
 	}
 
@@ -117,7 +117,7 @@ func (r *ProblemRunner) handleEvaluateCall(input []byte) error {
 		return err
 	}
 
-	evaluator := r.evaluators[message.EvaluatorId]
+	evaluator := r.evaluators[message.EvaluatorID]
 	currentStep, values, err := evaluator.Evaluate(message.NextStep)
 	if err != nil {
 		return err
@@ -133,21 +133,21 @@ func (r *ProblemRunner) handleEvaluateCall(input []byte) error {
 
 func (r *ProblemRunner) handleDropEvaluatorCast(input []byte) error {
 	var message struct {
-		EvaluatorId uint64 `json:"evaluator_id"`
+		EvaluatorID uint64 `json:"evaluator_id"`
 	}
 
 	if err := json.Unmarshal(input, &message); err != nil {
 		return err
 	}
 
-	delete(r.evaluators, message.EvaluatorId)
+	delete(r.evaluators, message.EvaluatorID)
 	return nil
 }
 
 func (r *ProblemRunner) handleCreateEvaluatorCall(input []byte) error {
 	var message struct {
-		ProblemId   uint64    `json:"problem_id"`
-		EvaluatorId uint64    `json:"evaluator_id"`
+		ProblemID   uint64    `json:"problem_id"`
+		EvaluatorID uint64    `json:"evaluator_id"`
 		Params      []float64 `json:"params"`
 	}
 
@@ -155,34 +155,34 @@ func (r *ProblemRunner) handleCreateEvaluatorCall(input []byte) error {
 		return err
 	}
 
-	problem := r.problems[message.ProblemId]
+	problem := r.problems[message.ProblemID]
 	evaluator, err := problem.CreateEvaluator(message.Params)
-	if err == UnevalableParamsError {
+	if err == ErrorUnevalableParams {
 		return r.sendMessage(map[string]interface{}{"type": "ERROR_REPLY", "kind": "UNEVALABLE_PARAMS"})
 	} else if err != nil {
 		return err
 	}
 
-	r.evaluators[message.EvaluatorId] = evaluator
+	r.evaluators[message.EvaluatorID] = evaluator
 	return r.sendMessage(map[string]interface{}{"type": "CREATE_EVALUATOR_REPLY"})
 }
 
 func (r *ProblemRunner) handleDropProblemCast(input []byte) error {
 	var message struct {
-		ProblemId uint64 `json:"problem_id"`
+		ProblemID uint64 `json:"problem_id"`
 	}
 
 	if err := json.Unmarshal(input, &message); err != nil {
 		return err
 	}
 
-	delete(r.problems, message.ProblemId)
+	delete(r.problems, message.ProblemID)
 	return nil
 }
 
 func (r *ProblemRunner) handleCreateProblemCast(input []byte) error {
 	var message struct {
-		ProblemId  uint64 `json:"problem_id"`
+		ProblemID  uint64 `json:"problem_id"`
 		RandomSeed uint64 `json:"random_seed"`
 	}
 
@@ -195,7 +195,7 @@ func (r *ProblemRunner) handleCreateProblemCast(input []byte) error {
 		return err
 	}
 
-	r.problems[message.ProblemId] = problem
+	r.problems[message.ProblemID] = problem
 	return nil
 }
 
