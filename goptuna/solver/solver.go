@@ -144,7 +144,7 @@ func (r *GoptunaSolver) Tell(trial kurobako.EvaluatedTrial) error {
 	if shouldPrune {
 		r.pruned.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
 		return r.study.Storage.SetTrialState(goptunaTrialID, goptuna.TrialStatePruned)
- 	}
+	}
 
 	r.waitings.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
 	return nil
