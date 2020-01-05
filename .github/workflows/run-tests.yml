@@ -1,4 +1,4 @@
-name: Run tests and lint checks
+name: CI
 on: [push, pull_request]
 jobs:
   lint:

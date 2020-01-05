@@ -184,6 +184,5 @@ $ kurobako studies --solvers $SOLVER1 $SOLVER2 --problems $PROBLEM | kurobako ru
 
 // Generate Markdown format report and visualization image.
 $ cat result.json | kurobako report
-
 $ cat result.json | kurobako plot curve
 ```
