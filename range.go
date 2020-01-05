@@ -10,15 +10,21 @@ func isFinite(v float64) bool {
 	return !(math.IsInf(v, 0) || math.IsNaN(v))
 }
 
+// ContinuousRange represents a numerical continuous range.
 type ContinuousRange struct {
+	// Low is the lower bound of the range (inclusive).
 	Low  float64 `json:"low"`
+
+	// High is the upper bound of the range (exclusive).
 	High float64 `json:"high"`
 }
 
+// ToRange creates a Range object that contains the receiver object.
 func (r ContinuousRange) ToRange() Range {
 	return Range{r}
 }
 
+// MarshalJSON encodes a ContinuousRange object to JSON bytes.
 func (r ContinuousRange) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{
 		"type": "CONTINUOUS",
@@ -36,6 +42,7 @@ func (r ContinuousRange) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+// UnmarshalJSON decodes a ContinuousRange object from JSON bytes.
 func (r *ContinuousRange) UnmarshalJSON(data []byte) error {
 	var m struct {
 		Low  *float64 `json:"low"`
@@ -60,27 +67,37 @@ func (r *ContinuousRange) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// DiscreteRange represents a numerical discrete range.
 type DiscreteRange struct {
+	// Low is the lower bound of the range (inclusive).
 	Low  int64 `json:"low"`
+
+	// High is the upper bound of the range (exclusive).
 	High int64 `json:"high"`
 }
 
+// ToRange create a Range object that contains the receiver object.
 func (r DiscreteRange) ToRange() Range {
 	return Range{r}
 }
 
+// CategoricalRange represents a categorical range (choices).
 type CategoricalRange struct {
+	// Choices is the possible values in the range.
 	Choices []string `json:"choices"`
 }
 
+// ToRange creates a Range object that contains the receiver object.
 func (r CategoricalRange) ToRange() Range {
 	return Range{r}
 }
 
+// Range represents the range of a parameter.
 type Range struct {
 	inner interface{}
 }
 
+// Low is the lower bound of the range (inclusive).
 func (r *Range) Low() float64 {
 	switch x := (r.inner).(type) {
 	case ContinuousRange:
@@ -94,6 +111,7 @@ func (r *Range) Low() float64 {
 	}
 }
 
+// High is the upper bound of the range (exclusive).
 func (r *Range) High() float64 {
 	switch x := (r.inner).(type) {
 	case ContinuousRange:
@@ -107,6 +125,7 @@ func (r *Range) High() float64 {
 	}
 }
 
+// AsContinuousRange tries to return the inner object of the range as a ContinuousRange object.
 func (r *Range) AsContinuousRange() *ContinuousRange {
 	inner, ok := (r.inner).(ContinuousRange)
 	if ok {
@@ -115,6 +134,7 @@ func (r *Range) AsContinuousRange() *ContinuousRange {
 	return nil
 }
 
+// AsDiscreteRange tries to return the inner object of the range as a DiscreteRange object.
 func (r *Range) AsDiscreteRange() *DiscreteRange {
 	inner, ok := (r.inner).(DiscreteRange)
 	if ok {
@@ -123,6 +143,7 @@ func (r *Range) AsDiscreteRange() *DiscreteRange {
 	return nil
 }
 
+// AsCategoricalRange tries to return the inner object of the range as a CategoricalRange object.
 func (r *Range) AsCategoricalRange() *CategoricalRange {
 	inner, ok := (r.inner).(CategoricalRange)
 	if ok {
@@ -131,6 +152,7 @@ func (r *Range) AsCategoricalRange() *CategoricalRange {
 	return nil
 }
 
+// MarshalJSON encodes a range object to JSON bytes.
 func (r Range) MarshalJSON() ([]byte, error) {
 	if x := r.AsContinuousRange(); x != nil {
 		return json.Marshal(x)
@@ -150,6 +172,7 @@ func (r Range) MarshalJSON() ([]byte, error) {
 	}
 }
 
+// UnmarshalJSON decodes a Range object from JSON bytes.
 func (r *Range) UnmarshalJSON(data []byte) error {
 	var m map[string]interface{}
 	if err := json.Unmarshal(data, &m); err != nil {
