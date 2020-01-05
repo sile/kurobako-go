@@ -16,6 +16,9 @@ Usage Examples
 
 ### Define a solver based on random search
 
+### Define a solver based on [Goptuna]
+
+[Goptuna]: https://github.com/c-bata/goptuna
 
 ### Define a problem that represents a quadratic function `x**2 + y`
 
