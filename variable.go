@@ -7,13 +7,27 @@ import (
 	lua "github.com/yuin/gopher-lua"
 )
 
+// Var is a definition of a variable.
 type Var struct {
+	// Name is the name of the variable.
 	Name         string       `json:"name"`
+
+	// Range is the value range of the variable.
 	Range        Range        `json:"range"`
+
+	// Distribution is the value distribution of the variable.
 	Distribution Distribution `json:"distribution"`
+
+	// Constraint is the constraint of the variable.
+	//
+	// A constraint is represented by a Lua script.
+	// If the script returns true, it means the constraint is satisfied.
+	//
+ 	// If the constraint isn't satisfied, the variable won't be considered during the evaluation process.
 	Constraint   *string      `json:"constraint"`
 }
 
+// NewVar creates a new Var instance.
 func NewVar(name string) Var {
 	return Var{
 		Name:         name,
@@ -23,6 +37,7 @@ func NewVar(name string) Var {
 	}
 }
 
+// IsConstraintSatisfied checks whether the constraint of the variable is satisfied under the given bound (i.e., already evaluated) variables.
 func (r Var) IsConstraintSatisfied(vars []Var, vals []*float64) (bool, error) {
 	if r.Constraint == nil {
 		return true, nil
