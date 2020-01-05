@@ -28,9 +28,9 @@ func NewSteps(steps []uint64) (*Steps, error) {
 
 	if isSequential {
 		return &Steps{true, []uint64{steps[len(steps)-1]}}, nil
-	} else {
-		return &Steps{false, steps}, nil
 	}
+
+	return &Steps{false, steps}, nil
 }
 
 func (r Steps) Last() uint64 {
@@ -45,17 +45,17 @@ func (r Steps) AsSlice() []uint64 {
 			steps = append(steps, i)
 		}
 		return steps
-	} else {
-		return r.steps
 	}
+
+	return r.steps
 }
 
 func (r Steps) MarshalJSON() ([]byte, error) {
 	if r.isSequential {
 		return json.Marshal(r.Last())
-	} else {
-		return json.Marshal(r.steps)
 	}
+
+	return json.Marshal(r.steps)
 }
 
 func (r *Steps) UnmarshalJSON(data []byte) error {
