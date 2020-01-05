@@ -1,5 +1,5 @@
-// A library to help implement solvers and problems kurobako (https://github.com/sile/kurobako).
+// A library to help implement solvers and problems of kurobako.
 //
-// This package also provides a Goptuna integration
-// (https://godoc.org/github.com/sile/kurobako-go/goptuna/solver).
+// kurobako is a black-box optimization tool.
+// Please see https://github.com/sile/kurobako for the details.
 package kurobako
