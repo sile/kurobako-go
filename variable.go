@@ -48,12 +48,12 @@ func (r Var) IsConstraintSatisfied(vars []Var, vals []*float64) (bool, error) {
 
 	if err := lua_state.DoString(*r.Constraint); err != nil {
 		return false, err
-	} else {
-		value := lua_state.Get(-1)
-		satisfied, ok := value.(lua.LBool)
-		if !ok {
-			return false, fmt.Errorf("expected a lua bool value, got %v", value)
-		}
-		return bool(satisfied), nil
 	}
+
+	value := lua_state.Get(-1)
+	satisfied, ok := value.(lua.LBool)
+	if !ok {
+		return false, fmt.Errorf("expected a lua bool value, got %v", value)
+	}
+	return bool(satisfied), nil
 }

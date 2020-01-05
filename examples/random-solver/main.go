@@ -31,7 +31,7 @@ func (r *randomSolver) sampleLogUniform(low float64, high float64) float64 {
 	return math.Exp(r.sampleUniform(math.Log(low), math.Log(high)))
 }
 
-func (r *randomSolver) Ask(idg *kurobako.TrialIdGenerator) (kurobako.NextTrial, error) {
+func (r *randomSolver) Ask(idg *kurobako.TrialIDGenerator) (kurobako.NextTrial, error) {
 	var trial kurobako.NextTrial
 
 	for _, p := range r.problem.Params {
@@ -44,7 +44,7 @@ func (r *randomSolver) Ask(idg *kurobako.TrialIdGenerator) (kurobako.NextTrial, 
 		}
 	}
 
-	trial.TrialId = idg.Generate()
+	trial.TrialID = idg.Generate()
 	trial.NextStep = r.problem.Steps.Last()
 	return trial, nil
 }

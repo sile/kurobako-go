@@ -5,14 +5,14 @@ import (
 )
 
 type NextTrial struct {
-	TrialId  uint64     `json:"id"`
+	TrialID  uint64     `json:"id"`
 	Params   []*float64 `json:"params"`
 	NextStep uint64     `json:"next_step"`
 }
 
 func (r NextTrial) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{
-		"id":        r.TrialId,
+		"id":        r.TrialID,
 		"params":    r.Params,
 		"next_step": r.NextStep,
 	}
@@ -23,16 +23,16 @@ func (r NextTrial) MarshalJSON() ([]byte, error) {
 }
 
 type EvaluatedTrial struct {
-	TrialId     uint64    `json:"id"`
+	TrialID     uint64    `json:"id"`
 	Values      []float64 `json:"values"`
 	CurrentStep uint64    `json:"current_step"`
 }
 
-type TrialIdGenerator struct {
+type TrialIDGenerator struct {
 	NextId uint64
 }
 
-func (r *TrialIdGenerator) Generate() uint64 {
+func (r *TrialIDGenerator) Generate() uint64 {
 	id := r.NextId
 	r.NextId++
 	return id

@@ -17,7 +17,7 @@ func NewSolverSpec(name string) SolverSpec {
 }
 
 type Solver interface {
-	Ask(idg *TrialIdGenerator) (NextTrial, error)
+	Ask(idg *TrialIDGenerator) (NextTrial, error)
 	Tell(trial EvaluatedTrial) error
 }
 
@@ -111,14 +111,14 @@ func (r *SolverRunner) handleTellCall(input []byte) error {
 func (r *SolverRunner) handleAskCall(input []byte) error {
 	var message struct {
 		SolverId    uint64 `json:"solver_id"`
-		NextTrialId uint64 `json:"next_trial_id"`
+		NextTrialID uint64 `json:"next_trial_id"`
 	}
 
 	if err := json.Unmarshal(input, &message); err != nil {
 		return err
 	}
 
-	idg := TrialIdGenerator{message.NextTrialId}
+	idg := TrialIDGenerator{message.NextTrialID}
 	solver := r.solvers[message.SolverId]
 	trial, err := solver.Ask(&idg)
 	if err != nil {

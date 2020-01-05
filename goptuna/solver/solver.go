@@ -46,20 +46,20 @@ type GoptunaSolver struct {
 	runnings map[uint64]int
 }
 
-func (r *GoptunaSolver) Ask(idg *kurobako.TrialIdGenerator) (kurobako.NextTrial, error) {
+func (r *GoptunaSolver) Ask(idg *kurobako.TrialIDGenerator) (kurobako.NextTrial, error) {
 	var nextTrial kurobako.NextTrial
-	var goptunaTrialId int
+	var goptunaTrialID int
 
 	nextTrial.Params = []*float64{}
 	if item := r.pruned.pop(); item != nil {
-		nextTrial.TrialId = item.kurobakoTrialId
-		goptunaTrialId = item.goptunaTrialId
+		nextTrial.TrialID = item.kurobakoTrialID
+		goptunaTrialID = item.goptunaTrialID
 		nextTrial.NextStep = 0 // `0` indicates that this trial has been pruned.
 	} else if item := r.waitings.pop(); item != nil {
-		nextTrial.TrialId = item.kurobakoTrialId
-		goptunaTrialId = item.goptunaTrialId
+		nextTrial.TrialID = item.kurobakoTrialID
+		goptunaTrialID = item.goptunaTrialID
 
-		frozenTrial, err := r.study.Storage.GetTrial(goptunaTrialId)
+		frozenTrial, err := r.study.Storage.GetTrial(goptunaTrialID)
 		if err != nil {
 			return nextTrial, err
 		}
@@ -67,12 +67,12 @@ func (r *GoptunaSolver) Ask(idg *kurobako.TrialIdGenerator) (kurobako.NextTrial,
 		currentStep, _ := frozenTrial.GetLatestStep()
 		nextTrial.NextStep = uint64(currentStep) + 1
 	} else {
-		nextTrial.TrialId = idg.Generate()
-		newGoptunaTrialId, err := r.study.Storage.CreateNewTrial(r.study.ID)
+		nextTrial.TrialID = idg.Generate()
+		newGoptunaTrialID, err := r.study.Storage.CreateNewTrial(r.study.ID)
 		if err != nil {
 			return nextTrial, err
 		}
-		goptunaTrialId = newGoptunaTrialId
+		goptunaTrialID = newGoptunaTrialID
 		nextTrial.NextStep = 1
 
 		for _, p := range r.problem.Params {
@@ -82,7 +82,7 @@ func (r *GoptunaSolver) Ask(idg *kurobako.TrialIdGenerator) (kurobako.NextTrial,
 			}
 
 			if satisfied {
-				value, err := r.suggest(goptunaTrialId, p)
+				value, err := r.suggest(goptunaTrialID, p)
 				if err != nil {
 					return nextTrial, err
 				}
@@ -93,23 +93,23 @@ func (r *GoptunaSolver) Ask(idg *kurobako.TrialIdGenerator) (kurobako.NextTrial,
 		}
 	}
 
-	r.runnings[nextTrial.TrialId] = goptunaTrialId
+	r.runnings[nextTrial.TrialID] = goptunaTrialID
 	return nextTrial, nil
 }
 
 func (r *GoptunaSolver) Tell(trial kurobako.EvaluatedTrial) error {
-	kurobakoTrialId := trial.TrialId
+	kurobakoTrialID := trial.TrialID
 	values := trial.Values
 	currentStep := trial.CurrentStep
 
-	goptunaTrialId, ok := r.runnings[kurobakoTrialId]
+	goptunaTrialID, ok := r.runnings[kurobakoTrialID]
 	if !ok {
-		return fmt.Errorf("unknown trial: kurobakoTrialId=%v", kurobakoTrialId)
+		return fmt.Errorf("unknown trial: kurobakoTrialID=%v", kurobakoTrialID)
 	}
-	delete(r.runnings, kurobakoTrialId)
+	delete(r.runnings, kurobakoTrialID)
 
 	if len(values) == 0 {
-		return r.study.Storage.SetTrialState(goptunaTrialId, goptuna.TrialStatePruned)
+		return r.study.Storage.SetTrialState(goptunaTrialID, goptuna.TrialStatePruned)
 	}
 
 	value := values[0]
@@ -118,19 +118,19 @@ func (r *GoptunaSolver) Tell(trial kurobako.EvaluatedTrial) error {
 	}
 
 	if currentStep >= r.problem.Steps.Last() {
-		if err := r.study.Storage.SetTrialValue(goptunaTrialId, value); err != nil {
+		if err := r.study.Storage.SetTrialValue(goptunaTrialID, value); err != nil {
 			return err
 		}
-		return r.study.Storage.SetTrialState(goptunaTrialId, goptuna.TrialStateComplete)
+		return r.study.Storage.SetTrialState(goptunaTrialID, goptuna.TrialStateComplete)
 	} else {
-		if err := r.study.Storage.SetTrialValue(goptunaTrialId, value); err != nil {
+		if err := r.study.Storage.SetTrialValue(goptunaTrialID, value); err != nil {
 			return err
 		}
-		if err := r.study.Storage.SetTrialIntermediateValue(goptunaTrialId, int(currentStep), value); err != nil {
+		if err := r.study.Storage.SetTrialIntermediateValue(goptunaTrialID, int(currentStep), value); err != nil {
 			return err
 		}
 
-		trial, err := r.study.Storage.GetTrial(goptunaTrialId)
+		trial, err := r.study.Storage.GetTrial(goptunaTrialID)
 		if err != nil {
 			return err
 		}
@@ -141,17 +141,17 @@ func (r *GoptunaSolver) Tell(trial kurobako.EvaluatedTrial) error {
 		}
 
 		if shouldPrune {
-			r.pruned.push(trialQueueItem{kurobakoTrialId, goptunaTrialId})
-			return r.study.Storage.SetTrialState(goptunaTrialId, goptuna.TrialStatePruned)
+			r.pruned.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
+			return r.study.Storage.SetTrialState(goptunaTrialID, goptuna.TrialStatePruned)
 		} else {
-			r.waitings.push(trialQueueItem{kurobakoTrialId, goptunaTrialId})
+			r.waitings.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
 			return nil
 		}
 	}
 }
 
-func (r *GoptunaSolver) suggest(goptunaTrialId int, param kurobako.Var) (float64, error) {
-	trial, err := r.study.Storage.GetTrial(goptunaTrialId)
+func (r *GoptunaSolver) suggest(goptunaTrialID int, param kurobako.Var) (float64, error) {
+	trial, err := r.study.Storage.GetTrial(goptunaTrialID)
 	if err != nil {
 		return 0.0, err
 	}
@@ -188,7 +188,7 @@ func (r *GoptunaSolver) suggest(goptunaTrialId int, param kurobako.Var) (float64
 			return 0.0, err
 		}
 
-		err = r.study.Storage.SetTrialParam(goptunaTrialId, param.Name, value, distribution)
+		err = r.study.Storage.SetTrialParam(goptunaTrialID, param.Name, value, distribution)
 		if err != nil {
 			return 0.0, err
 		}
@@ -221,6 +221,6 @@ func (r *trialQueue) pop() *trialQueueItem {
 }
 
 type trialQueueItem struct {
-	kurobakoTrialId uint64
-	goptunaTrialId  int
+	kurobakoTrialID uint64
+	goptunaTrialID  int
 }
