@@ -9,16 +9,28 @@ import (
 	"os"
 )
 
+// ErrorUnevalableParams is an error that is used when an evaluator encounters an infeasible parameter set.
 var ErrorUnevalableParams = errors.New("unevalable params")
 
+// ProblemSpec is the specification of a black-box optimization problem.
 type ProblemSpec struct {
+	// Name is the name of the problem.
 	Name   string            `json:"name"`
+
+	// Attrs is the attributes of the problem.
 	Attrs  map[string]string `json:"attrs"`
+
+	// Params is the definition of the parameters domain of the problem.
 	Params []Var             `json:"params_domain"`
+
+	// Values is the definition of the values domain of the problem.
 	Values []Var             `json:"values_domain"`
+
+	// Steps is the sequence of the evaluation steps of the problem.
 	Steps  Steps             `json:"steps"`
 }
 
+// NewProblemSpec creates a new ProblemSpec instance.
 func NewProblemSpec(name string) ProblemSpec {
 	steps, _ := NewSteps([]uint64{1})
 	return ProblemSpec{
@@ -28,29 +40,40 @@ func NewProblemSpec(name string) ProblemSpec {
 	}
 }
 
+// Evaluator allows to execute an evaluation process.
 type Evaluator interface {
+	// evaluate executes an evaluation process, at least, until the given step.
 	Evaluate(nextStep uint64) (currentStep uint64, values []float64, err error)
 }
 
+// Problem allows to create a new evaluator instance.
 type Problem interface {
+	// CreateEvaluator creates a new evaluator to evaluate the given parameter set.
 	CreateEvaluator(params []float64) (Evaluator, error)
 }
 
+// ProblemFactory allows to create a new problem instance.
 type ProblemFactory interface {
+	// Specification returns the specification of the problem.
 	Specification() (*ProblemSpec, error)
+
+	// CreateProblem creates a new problem instance with the given random seed.
 	CreateProblem(seed int64) (Problem, error)
 }
 
+// ProblemRunner runs a black-box optimization problem.
 type ProblemRunner struct {
 	factory    ProblemFactory
 	problems   map[uint64]Problem
 	evaluators map[uint64]Evaluator
 }
 
+// NewProblemRunner creates a new ProblemRunner that runs the given problem.
 func NewProblemRunner(factory ProblemFactory) *ProblemRunner {
 	return &ProblemRunner{factory, nil, nil}
 }
 
+// Run runs the problem.
 func (r *ProblemRunner) Run() error {
 	r.problems = map[uint64]Problem{}
 	r.evaluators = map[uint64]Evaluator{}
