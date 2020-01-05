@@ -5,22 +5,40 @@ import (
 	"fmt"
 )
 
+// Capabilities of a solver.
 type Capabilities int64
 
 const (
+	// UniformContinuous indicates that the solver can handle numerical parameters that have uniform continuous range.
 	UniformContinuous Capabilities = 1 << iota
+
+	// UniformDiscrete indicates that the solver can handle numerical parameters that have uniform discrete range.
 	UniformDiscrete
+
+	// LogUniformContinuous indicates that the solver can handle numerical parameters that have log-uniform continuous range.
 	LogUniformContinuous
+
+	// LogUniformDiscrete indicates that the solver can handle numerical parameters that have log-uniform discrete range.
 	LogUniformDiscrete
+
+	// Categorical indicates that the solver can handle categorical parameters.
 	Categorical
+
+	// Conditional indicates that the solver can handle conditional parameters.
 	Conditional
+
+	// MultiObjective indicates that the solver supports multi-objective optimization.
 	MultiObjective
+
+	// Concurrent indicates that the solver supports concurrent invocations of the ask method.
 	Concurrent
 
+	// AllCapabilities represents all of the capabilities.
 	AllCapabilities Capabilities = UniformContinuous | UniformDiscrete | LogUniformContinuous |
 		LogUniformDiscrete | Categorical | Conditional | MultiObjective | Concurrent
 )
 
+// MarshalJSON encodes a Capabilities value to JSON bytes.
 func (r Capabilities) MarshalJSON() ([]byte, error) {
 	var xs []string
 	if (r & UniformContinuous) != 0 {
@@ -50,6 +68,7 @@ func (r Capabilities) MarshalJSON() ([]byte, error) {
 	return json.Marshal(xs)
 }
 
+// UnmarshalJSON decodes a Capabilities value from JSON bytes.
 func (r *Capabilities) UnmarshalJSON(data []byte) error {
 	var xs []string
 	if err := json.Unmarshal(data, &xs); err != nil {
