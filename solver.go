@@ -9,13 +9,13 @@ import (
 // SolverSpec is the specification of a solver.
 type SolverSpec struct {
 	// Name is the name of the solver.
-	Name         string            `json:"name"`
+	Name string `json:"name"`
 
 	// Attrs is the attributes of the solver.
-	Attrs        map[string]string `json:"attrs"`
+	Attrs map[string]string `json:"attrs"`
 
 	// Capabilities is the capabilities of the solver.
-	Capabilities Capabilities      `json:"capabilities"`
+	Capabilities Capabilities `json:"capabilities"`
 }
 
 // NewSolverSpec creates a new SolverSpec instance.

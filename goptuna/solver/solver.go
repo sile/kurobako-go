@@ -23,7 +23,6 @@ func NewGoptunaSolverFactory(createStudy func(int64) (*goptuna.Study, error)) Go
 	return GoptunaSolverFactory{createStudy}
 }
 
-
 func (r *GoptunaSolverFactory) Specification() (*kurobako.SolverSpec, error) {
 	spec := kurobako.NewSolverSpec("Goptuna")
 	spec.Attrs["github"] = "https://github.com/c-bata/goptuna"

@@ -15,19 +15,19 @@ var ErrorUnevalableParams = errors.New("unevalable params")
 // ProblemSpec is the specification of a black-box optimization problem.
 type ProblemSpec struct {
 	// Name is the name of the problem.
-	Name   string            `json:"name"`
+	Name string `json:"name"`
 
 	// Attrs is the attributes of the problem.
-	Attrs  map[string]string `json:"attrs"`
+	Attrs map[string]string `json:"attrs"`
 
 	// Params is the definition of the parameters domain of the problem.
-	Params []Var             `json:"params_domain"`
+	Params []Var `json:"params_domain"`
 
 	// Values is the definition of the values domain of the problem.
-	Values []Var             `json:"values_domain"`
+	Values []Var `json:"values_domain"`
 
 	// Steps is the sequence of the evaluation steps of the problem.
-	Steps  Steps             `json:"steps"`
+	Steps Steps `json:"steps"`
 }
 
 // NewProblemSpec creates a new ProblemSpec instance.

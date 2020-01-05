@@ -13,7 +13,7 @@ func isFinite(v float64) bool {
 // ContinuousRange represents a numerical continuous range.
 type ContinuousRange struct {
 	// Low is the lower bound of the range (inclusive).
-	Low  float64 `json:"low"`
+	Low float64 `json:"low"`
 
 	// High is the upper bound of the range (exclusive).
 	High float64 `json:"high"`
@@ -70,7 +70,7 @@ func (r *ContinuousRange) UnmarshalJSON(data []byte) error {
 // DiscreteRange represents a numerical discrete range.
 type DiscreteRange struct {
 	// Low is the lower bound of the range (inclusive).
-	Low  int64 `json:"low"`
+	Low int64 `json:"low"`
 
 	// High is the upper bound of the range (exclusive).
 	High int64 `json:"high"`
