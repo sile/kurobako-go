@@ -86,6 +86,104 @@ func main() {
 
 [Goptuna]: https://github.com/c-bata/goptuna
 
+```go
+// file: goptuna-solver.go
+package main
+
+import (
+	"github.com/c-bata/goptuna"
+	"github.com/c-bata/goptuna/tpe"
+	"github.com/sile/kurobako-go"
+	"github.com/sile/kurobako-go/goptuna/solver"
+)
+
+func createStudy(seed int64) (*goptuna.Study, error) {
+	sampler := tpe.NewSampler(tpe.SamplerOptionSeed(seed))
+	return goptuna.CreateStudy("example-study", goptuna.StudyOptionSampler(sampler))
+}
+
+func main() {
+	factory := solver.NewGoptunaSolverFactory(createStudy)
+	runner := kurobako.NewSolverRunner(&factory)
+	if err := runner.Run(); err != nil {
+		panic(err)
+	}
+}
+```
+
 ### 3. Define a problem that represents a quadratic function `x**2 + y`
 
+```go
+// file: quadratic-problem.go
+package main
+
+import (
+	"github.com/sile/kurobako-go"
+)
+
+type quadraticProblemFactory struct {
+}
+
+func (r *quadraticProblemFactory) Specification() (*kurobako.ProblemSpec, error) {
+	spec := kurobako.NewProblemSpec("Quadratic Function")
+
+	x := kurobako.NewVar("x")
+	x.Range = kurobako.ContinuousRange{-10.0, 10.0}.ToRange()
+
+	y := kurobako.NewVar("y")
+	y.Range = kurobako.DiscreteRange{-3, 3}.ToRange()
+
+	spec.Params = []kurobako.Var{x, y}
+
+	spec.Values = []kurobako.Var{kurobako.NewVar("x**2 + y")}
+
+	return &spec, nil
+}
+
+func (r *quadraticProblemFactory) CreateProblem(seed int64) (kurobako.Problem, error) {
+	return &quadraticProblem{}, nil
+}
+
+type quadraticProblem struct {
+}
+
+func (r *quadraticProblem) CreateEvaluator(params []float64) (kurobako.Evaluator, error) {
+	x := params[0]
+	y := params[1]
+	return &quadraticEvaluator{x, y}, nil
+}
+
+type quadraticEvaluator struct {
+	x float64
+	y float64
+}
+
+func (r *quadraticEvaluator) Evaluate(nextStep uint64) (uint64, []float64, error) {
+	values := []float64{r.x*r.x + r.y}
+	return 1, values, nil
+}
+
+func main() {
+	runner := kurobako.NewProblemRunner(&quadraticProblemFactory{})
+	if err := runner.Run(); err != nil {
+		panic(err)
+	}
+}
+```
+
 ### 4. Run a benchmark that uses the above solver and problem
+
+```console
+// Define solver and problem.
+$ SOLVER1=$(kurobako solver command go run random-solver.go)
+$ SOLVER2=$(kurobako solver command go run goptuna-solver.go)
+$ PROBLEM=$(kurobako problem command go run quadratic-problem.go)
+
+// Execute benchmark.
+$ kurobako studies --solvers $SOLVER1 $SOLVER2 --problems $PROBLEM | kurobako run > result.json
+
+// Generate Markdown format report and visualization image.
+$ cat result.json | kurobako report
+
+$ cat result.json | kurobako plot curve
+```
