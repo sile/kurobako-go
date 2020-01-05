@@ -2,6 +2,7 @@ package solver
 
 import (
 	"fmt"
+
 	"github.com/c-bata/goptuna"
 	"github.com/sile/kurobako-go"
 )

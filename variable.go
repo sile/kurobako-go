@@ -2,8 +2,9 @@ package kurobako
 
 import (
 	"fmt"
-	"github.com/yuin/gopher-lua"
 	"math"
+
+	lua "github.com/yuin/gopher-lua"
 )
 
 type Var struct {
