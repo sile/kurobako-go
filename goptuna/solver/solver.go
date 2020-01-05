@@ -30,12 +30,12 @@ func (r *GoptunaSolverFactory) CreateSolver(seed int64, problem kurobako.Problem
 	study, err := r.createStudy(seed)
 	if err != nil {
 		return nil, err
-	} else {
-		var waitings trialQueue
-		var pruned trialQueue
-		runnings := map[uint64]int{}
-		return &GoptunaSolver{study, problem, waitings, pruned, runnings}, nil
 	}
+
+	var waitings trialQueue
+	var pruned trialQueue
+	runnings := map[uint64]int{}
+	return &GoptunaSolver{study, problem, waitings, pruned, runnings}, nil
 }
 
 type GoptunaSolver struct {
@@ -122,32 +122,32 @@ func (r *GoptunaSolver) Tell(trial kurobako.EvaluatedTrial) error {
 			return err
 		}
 		return r.study.Storage.SetTrialState(goptunaTrialID, goptuna.TrialStateComplete)
-	} else {
-		if err := r.study.Storage.SetTrialValue(goptunaTrialID, value); err != nil {
-			return err
-		}
-		if err := r.study.Storage.SetTrialIntermediateValue(goptunaTrialID, int(currentStep), value); err != nil {
-			return err
-		}
-
-		trial, err := r.study.Storage.GetTrial(goptunaTrialID)
-		if err != nil {
-			return err
-		}
-
-		shouldPrune, err := r.study.Pruner.Prune(r.study, trial)
-		if err != nil {
-			return err
-		}
-
-		if shouldPrune {
-			r.pruned.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
-			return r.study.Storage.SetTrialState(goptunaTrialID, goptuna.TrialStatePruned)
-		} else {
-			r.waitings.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
-			return nil
-		}
 	}
+
+	if err := r.study.Storage.SetTrialValue(goptunaTrialID, value); err != nil {
+		return err
+	}
+	if err := r.study.Storage.SetTrialIntermediateValue(goptunaTrialID, int(currentStep), value); err != nil {
+		return err
+	}
+
+	trial, err := r.study.Storage.GetTrial(goptunaTrialID)
+	if err != nil {
+		return err
+	}
+
+	shouldPrune, err := r.study.Pruner.Prune(r.study, trial)
+	if err != nil {
+		return err
+	}
+
+	if shouldPrune {
+		r.pruned.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
+		return r.study.Storage.SetTrialState(goptunaTrialID, goptuna.TrialStatePruned)
+	}
+
+	r.waitings.push(trialQueueItem{kurobakoTrialID, goptunaTrialID})
+	return nil
 }
 
 func (r *GoptunaSolver) suggest(goptunaTrialID int, param kurobako.Var) (float64, error) {
