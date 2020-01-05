@@ -1,3 +1,6 @@
+// This package provides a solver base on Goptuna.
+//
+// Please see https://github.com/c-bata/goptuna for Goptuna.
 package solver
 
 import (
@@ -7,13 +10,19 @@ import (
 	"github.com/sile/kurobako-go"
 )
 
+// GoptunaSolverFactory is a SolverFactory for Goptuna.
 type GoptunaSolverFactory struct {
 	createStudy func(int64) (*goptuna.Study, error)
 }
 
+// NewGoptunaSolverFactory creates a new GoptunaSolverFactory instance.
+//
+// The createStudy argument is a function that takes a random seed and returns a study object that
+// is used to solve black-box optimization problems.
 func NewGoptunaSolverFactory(createStudy func(int64) (*goptuna.Study, error)) GoptunaSolverFactory {
 	return GoptunaSolverFactory{createStudy}
 }
+
 
 func (r *GoptunaSolverFactory) Specification() (*kurobako.SolverSpec, error) {
 	spec := kurobako.NewSolverSpec("Goptuna")
@@ -39,6 +48,7 @@ func (r *GoptunaSolverFactory) CreateSolver(seed int64, problem kurobako.Problem
 	return &GoptunaSolver{study, problem, waitings, pruned, runnings}, nil
 }
 
+// GoptunaSolver is a Solver implementation based on Goptuna.
 type GoptunaSolver struct {
 	study    *goptuna.Study
 	problem  kurobako.ProblemSpec
