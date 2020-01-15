@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestRangeMarshlAndUnmarshal(t *testing.T) {
+func TestRangeMarshalAndUnmarshal(t *testing.T) {
 	type Pair struct {
 		value Range
 		json  string

@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestProglemSpecMarshlAndUnmarshal(t *testing.T) {
+func TestProblemSpecMarshalAndUnmarshal(t *testing.T) {
 	spec := NewProblemSpec("Quadratic Function")
 
 	x := NewVar("x")

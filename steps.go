@@ -46,7 +46,7 @@ func (r Steps) Last() uint64 {
 func (r Steps) AsSlice() []uint64 {
 	if r.isSequential {
 		last := r.Last()
-		steps := []uint64{}
+		steps := make([]uint64, 0, last)
 		for i := uint64(1); i <= last; i++ {
 			steps = append(steps, i)
 		}
