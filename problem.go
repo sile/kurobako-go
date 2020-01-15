@@ -250,7 +250,7 @@ func readLine() ([]byte, error) {
 	}
 
 	if prefix {
-		return nil, fmt.Errorf("Too long input")
+		return nil, fmt.Errorf("too long input")
 	}
 
 	return line, nil

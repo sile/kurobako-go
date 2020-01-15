@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestDistributionMarshlAndUnmarshal(t *testing.T) {
+func TestDistributionMarshalAndUnmarshal(t *testing.T) {
 	type Pair struct {
 		value Distribution
 		json  string
