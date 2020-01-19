@@ -13,7 +13,7 @@ func createStudy(seed int64) (*goptuna.Study, error) {
 }
 
 func main() {
-	factory := solver.NewGoptunaSolverFactory(createStudy)
+	factory := solver.NewGoptunaSolverFactory("Goptuna (TPE)", createStudy)
 	runner := kurobako.NewSolverRunner(&factory)
 	if err := runner.Run(); err != nil {
 		panic(err)

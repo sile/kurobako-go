@@ -12,6 +12,7 @@ import (
 
 // GoptunaSolverFactory is a SolverFactory for Goptuna.
 type GoptunaSolverFactory struct {
+	name        string
 	createStudy func(int64) (*goptuna.Study, error)
 }
 
@@ -19,12 +20,18 @@ type GoptunaSolverFactory struct {
 //
 // The createStudy argument is a function that takes a random seed and returns a study object that
 // is used to solve black-box optimization problems.
-func NewGoptunaSolverFactory(createStudy func(int64) (*goptuna.Study, error)) GoptunaSolverFactory {
-	return GoptunaSolverFactory{createStudy}
+func NewGoptunaSolverFactory(name string, createStudy func(int64) (*goptuna.Study, error)) GoptunaSolverFactory {
+	if name == "" {
+		name = "Goptuna"
+	}
+	return GoptunaSolverFactory{
+		name:        name,
+		createStudy: createStudy,
+	}
 }
 
 func (r *GoptunaSolverFactory) Specification() (*kurobako.SolverSpec, error) {
-	spec := kurobako.NewSolverSpec("Goptuna")
+	spec := kurobako.NewSolverSpec(r.name)
 	spec.Attrs["github"] = "https://github.com/c-bata/goptuna"
 	spec.Capabilities = kurobako.UniformContinuous |
 		kurobako.LogUniformContinuous |
