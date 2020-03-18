@@ -92,6 +92,11 @@ func (r *GoptunaSolver) Ask(idg *kurobako.TrialIDGenerator) (kurobako.NextTrial,
 		goptunaTrialID = newGoptunaTrialID
 		nextTrial.NextStep = 1
 
+		relativeValues, err := r.callRelativeSampler(goptunaTrialID, r.problem.Params)
+		if err != nil {
+			return nextTrial, err
+		}
+
 		for _, p := range r.problem.Params {
 			satisfied, err := p.IsConstraintSatisfied(r.problem.Params, nextTrial.Params)
 			if err != nil {
@@ -99,11 +104,16 @@ func (r *GoptunaSolver) Ask(idg *kurobako.TrialIDGenerator) (kurobako.NextTrial,
 			}
 
 			if satisfied {
-				value, err := r.suggest(goptunaTrialID, p)
-				if err != nil {
-					return nextTrial, err
+				v, ok := relativeValues[p.Name]
+				if ok {
+					nextTrial.Params = append(nextTrial.Params, &v)
+				} else {
+					value, err := r.suggest(goptunaTrialID, p)
+					if err != nil {
+						return nextTrial, err
+					}
+					nextTrial.Params = append(nextTrial.Params, &value)
 				}
-				nextTrial.Params = append(nextTrial.Params, &value)
 			} else {
 				nextTrial.Params = append(nextTrial.Params, nil)
 			}
@@ -167,53 +177,93 @@ func (r *GoptunaSolver) Tell(trial kurobako.EvaluatedTrial) error {
 	return nil
 }
 
+func (r *GoptunaSolver) callRelativeSampler(goptunaTrialID int, params []kurobako.Var) (map[string]float64, error) {
+	if r.study.RelativeSampler == nil {
+		return nil, nil
+	}
+
+	trial, err := r.study.Storage.GetTrial(goptunaTrialID)
+	if err != nil {
+		return nil, err
+	}
+
+	searchSpace := make(map[string]interface{}, len(params))
+	for _, p := range params {
+		distribution, err := toGoptunaDistribution(p)
+		if err != nil {
+			return nil, err
+		}
+		searchSpace[p.Name] = distribution
+	}
+
+	values, err := r.study.RelativeSampler.SampleRelative(r.study, trial, searchSpace)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, p := range params {
+		v, ok := values[p.Name]
+		if !ok {
+			continue
+		}
+
+		distribution := searchSpace[p.Name]
+		err = r.study.Storage.SetTrialParam(goptunaTrialID, p.Name, v, distribution)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return values, nil
+}
+
 func (r *GoptunaSolver) suggest(goptunaTrialID int, param kurobako.Var) (float64, error) {
 	trial, err := r.study.Storage.GetTrial(goptunaTrialID)
 	if err != nil {
 		return 0.0, err
 	}
 
-	var distribution interface{}
-	distribution = nil
+	distribution, err := toGoptunaDistribution(param)
+	if err != nil {
+		return 0.0, err
+	}
 
+	value, err := r.study.Sampler.Sample(r.study, trial, param.Name, distribution)
+	if err != nil {
+		return 0.0, err
+	}
+
+	err = r.study.Storage.SetTrialParam(goptunaTrialID, param.Name, value, distribution)
+	if err != nil {
+		return 0.0, err
+	}
+
+	return value, nil
+}
+
+func toGoptunaDistribution(param kurobako.Var) (interface{}, error) {
 	if x := param.Range.AsContinuousRange(); x != nil {
 		if param.Distribution == kurobako.Uniform {
-			distribution = goptuna.UniformDistribution{
+			return goptuna.UniformDistribution{
 				Low:  x.Low,
 				High: x.High,
-			}
+			}, nil
 		} else {
-			distribution = goptuna.LogUniformDistribution{
+			return goptuna.LogUniformDistribution{
 				Low:  x.Low,
 				High: x.High,
-			}
+			}, nil
 		}
 	} else if x := param.Range.AsDiscreteRange(); x != nil {
 		if param.Distribution == kurobako.Uniform {
-			distribution = goptuna.IntUniformDistribution{
+			return goptuna.IntUniformDistribution{
 				Low:  int(x.Low),
 				High: int(x.High - 1),
-			}
+			}, nil
 		}
 	} else if x := param.Range.AsCategoricalRange(); x != nil {
-		distribution = goptuna.CategoricalDistribution{Choices: x.Choices}
+		return goptuna.CategoricalDistribution{Choices: x.Choices}, nil
 	}
-
-	if distribution != nil {
-		value, err := r.study.Sampler.Sample(r.study, trial, param.Name, distribution)
-		if err != nil {
-			return 0.0, err
-		}
-
-		err = r.study.Storage.SetTrialParam(goptunaTrialID, param.Name, value, distribution)
-		if err != nil {
-			return 0.0, err
-		}
-
-		return value, nil
-	}
-
-	return 0.0, fmt.Errorf("unsupported parameter: %v", param)
+	return nil, fmt.Errorf("unsupported parameter: %v", param)
 }
 
 type trialQueue struct {

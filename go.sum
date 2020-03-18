@@ -14,6 +14,8 @@ github.com/c-bata/goptuna v0.1.0 h1:bw8hJNL2Gc5suQ//TV1tcgQPUfLMGliU14bXlB2KMd4=
 github.com/c-bata/goptuna v0.1.0/go.mod h1:Sn2amgMAWoP9y4kdTJhNWyWymdu0NFy/vM/KvETBH6Y=
 github.com/c-bata/goptuna v0.1.1-0.20191228081229-689071991c89 h1:Q3VjtoDWq+7Xmma04Etxjtk0GYumSt9tuv4z57woXsk=
 github.com/c-bata/goptuna v0.1.1-0.20191228081229-689071991c89/go.mod h1:oFGcPHSv7ChMD/L1PxWtHuXKvgpHfcPpTZEDiznEexg=
+github.com/c-bata/goptuna v0.3.0 h1:DvSrKb44w+8UXFUIh/0XeiYFTMQP78RCOJLcqydC31o=
+github.com/c-bata/goptuna v0.3.0/go.mod h1:Qs8/vk1a6Tqk3roNAJ9Kj+7LrI4z8jw46oP0BVjx63U=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
@@ -87,6 +89,7 @@ github.com/prometheus/procfs v0.0.0-20181005140218-185b4288413d/go.mod h1:c3At6R
 github.com/prometheus/procfs v0.0.0-20190117184657-bf6a532e95b1/go.mod h1:c3At6R/oaqEKCNdg8wHV1ftS6bRYblBhIjjI8uT2IGk=
 github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
+github.com/sile/kurobako-go v0.0.0-20200119054321-481b79c0068b/go.mod h1:FjX2M2IjP/e37osvrssWtrtvYvpfHqHp6nVdpLisEO8=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/spf13/afero v1.1.2/go.mod h1:j4pytiNVoe2o6bmDsKpLACNPDBIoEAkihy7loJ1B0CQ=
 github.com/spf13/cast v1.3.0/go.mod h1:Qx5cxh0v+4UWYiBimWS+eyWzqEqokIECu5etghLkUJE=
@@ -145,6 +148,7 @@ golang.org/x/tools v0.0.0-20190206041539-40960b6deb8e/go.mod h1:n7NCudcB/nEzxVGm
 golang.org/x/tools v0.0.0-20190226205152-f727befe758c/go.mod h1:9Yl7xja0Znq3iFh3HoIrodX9oNMXvdceNzlUR8zjMvY=
 golang.org/x/tools v0.0.0-20190312170243-e65039ee4138/go.mod h1:LCzVGOaR6xXOjkQ3onu1FJEFr0SW1gC7cKk1uF8kGRs=
 gonum.org/v1/gonum v0.0.0-20180816165407-929014505bf4/go.mod h1:Y+Yx5eoAFn32cQvJDxZx5Dpnq+c3wtXuadVZAcxbbBo=
+gonum.org/v1/gonum v0.0.0-20190724133715-a8659125a966 h1:5CcZkChKmcQ6B6JUJFwH1gkB90bmqY5oVWp6PVcypIQ=
 gonum.org/v1/gonum v0.0.0-20190724133715-a8659125a966/go.mod h1:9mxDZsDKxgMAuccQkewq682L+0eCu4dCN2yonUJTCLU=
 gonum.org/v1/netlib v0.0.0-20190313105609-8cb42192e0e0/go.mod h1:wa6Ws7BG/ESfp6dHfk7C6KdzKA7wR7u/rKwOGE66zvw=
 gonum.org/v1/plot v0.0.0-20190515093506-e2840ee46a6b/go.mod h1:Wt8AAjI+ypCyYX3nZBvf6cAIx93T+c/OS2HFAYskSZc=
