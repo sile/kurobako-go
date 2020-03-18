@@ -247,12 +247,11 @@ func toGoptunaDistribution(param kurobako.Var) (interface{}, error) {
 				Low:  x.Low,
 				High: x.High,
 			}, nil
-		} else {
-			return goptuna.LogUniformDistribution{
-				Low:  x.Low,
-				High: x.High,
-			}, nil
 		}
+		return goptuna.LogUniformDistribution{
+			Low:  x.Low,
+			High: x.High,
+		}, nil
 	} else if x := param.Range.AsDiscreteRange(); x != nil {
 		if param.Distribution == kurobako.Uniform {
 			return goptuna.IntUniformDistribution{
