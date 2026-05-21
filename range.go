@@ -156,20 +156,21 @@ func (r *Range) AsCategoricalRange() *CategoricalRange {
 func (r Range) MarshalJSON() ([]byte, error) {
 	if x := r.AsContinuousRange(); x != nil {
 		return json.Marshal(x)
-	} else if x := r.AsDiscreteRange(); x != nil {
+	}
+	if x := r.AsDiscreteRange(); x != nil {
 		return json.Marshal(map[string]interface{}{
 			"type": "DISCRETE",
 			"low":  x.Low,
 			"high": x.High,
 		})
-	} else if x := r.AsCategoricalRange(); x != nil {
+	}
+	if x := r.AsCategoricalRange(); x != nil {
 		return json.Marshal(map[string]interface{}{
 			"type":    "CATEGORICAL",
 			"choices": x.Choices,
 		})
-	} else {
-		panic("unreachable")
 	}
+	panic("unreachable")
 }
 
 // UnmarshalJSON decodes a Range object from JSON bytes.
